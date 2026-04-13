@@ -90,6 +90,10 @@ async function enviarMensagem(telefone, mensagem) {
     await axios.post(`${ZAPI_URL}/send-text`, {
       phone: phone,
       message: mensagem,
+    }, {
+      headers: {
+        "Client-Token": ZAPI_TOKEN,
+      }
     });
   } catch (err) {
     console.error("Erro ao enviar mensagem:", err.message);
