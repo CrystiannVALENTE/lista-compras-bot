@@ -210,7 +210,7 @@ const GRUPO_ID = "120363423230103539-group";
 function agendarRelatorio() {
   const agora = new Date();
   const proximo = new Date();
-  proximo.setHours(8, 0, 0, 0);
+  proximo.setHours(11, 0, 0, 0); // 11h UTC = 8h Brasília
   if (proximo <= agora) proximo.setDate(proximo.getDate() + 1);
   const diff = proximo - agora;
 
