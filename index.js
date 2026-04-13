@@ -11,6 +11,7 @@ app.use(express.json());
 // =============================
 const ZAPI_INSTANCE = "3F18CB8D6A8F5293C0319ED390C0144C";
 const ZAPI_TOKEN = "10403D4244F69B15B8BFAF61";
+const ZAPI_CLIENT_TOKEN = "F8b9ceb83dc0d4685af084e5c3bc9522fS";
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY || "SUA_CHAVE_AQUI";
 const ZAPI_URL = `https://api.z-api.io/instances/${ZAPI_INSTANCE}/token/${ZAPI_TOKEN}`;
 
@@ -92,7 +93,7 @@ async function enviarMensagem(telefone, mensagem) {
       message: mensagem,
     }, {
       headers: {
-        "Client-Token": ZAPI_TOKEN,
+        "Client-Token": ZAPI_CLIENT_TOKEN,
       }
     });
   } catch (err) {
