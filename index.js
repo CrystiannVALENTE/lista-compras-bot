@@ -83,12 +83,19 @@ Se não for um pedido de compra, retorne: {"ehPedido": false}`,
 // =============================
 async function enviarMensagem(telefone, mensagem) {
   try {
+    // Remove tudo que não é número
+    let phone = String(telefone).replace(/\D/g, "");
+    // Remove @s.whatsapp.net se vier no formato de grupo/contato
+    phone = phone.split("@")[0];
     await axios.post(`${ZAPI_URL}/send-text`, {
-      phone: telefone,
+      phone: phone,
       message: mensagem,
     });
   } catch (err) {
     console.error("Erro ao enviar mensagem:", err.message);
+    if (err.response) {
+      console.error("Detalhes:", JSON.stringify(err.response.data));
+    }
   }
 }
 
@@ -131,6 +138,8 @@ app.post("/webhook", async (req, res) => {
   const telefone = body.phone || body.from;
   const autor = body.senderName || body.pushName || "Funcionário";
   const isGrupo = body.isGroup || false;
+
+  console.log(`📱 Telefone recebido: ${JSON.stringify(telefone)}, isGrupo: ${isGrupo}`);
 
   if (!texto || !telefone) return;
 
