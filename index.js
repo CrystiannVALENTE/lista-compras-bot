@@ -66,7 +66,11 @@ Se não for um pedido de compra, retorne: {"ehPedido": false}`,
       }
     );
 
-    const texto_resposta = response.data.content[0].text.trim();
+    const texto_resposta = response.data.content[0].text
+      .trim()
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
     return JSON.parse(texto_resposta);
   } catch (err) {
     console.error("Erro na IA:", err.message);
