@@ -84,8 +84,10 @@ Se não for um pedido de compra, retorne: {"ehPedido": false}`,
 // =============================
 async function enviarMensagem(telefone, mensagem, isGrupo) {
   try {
-    let phone = String(telefone).replace(/-group$/, "").replace(/@.*$/, "");
-    if (isGrupo) phone = phone + "@g.us";
+    // Z-API: grupos usam formato "ID-group", contatos usam só o número
+    let phone = String(telefone).replace(/@.*$/, "");
+    // Para contatos, remove o -group se vier por engano
+    if (!isGrupo) phone = phone.replace(/-group$/, "");
 
     console.log(`📤 Enviando para: ${phone}, grupo: ${isGrupo}`);
 
