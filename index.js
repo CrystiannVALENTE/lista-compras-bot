@@ -85,6 +85,7 @@ Se não for um pedido de compra, retorne: {"ehPedido": false}`,
 async function enviarMensagem(telefone, mensagem, isGrupo) {
   try {
     let phone = String(telefone).replace(/-group$/, "").replace(/@.*$/, "");
+    if (isGrupo) phone = phone + "@g.us";
 
     console.log(`📤 Enviando para: ${phone}, grupo: ${isGrupo}`);
 
