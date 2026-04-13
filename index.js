@@ -82,25 +82,21 @@ Se não for um pedido de compra, retorne: {"ehPedido": false}`,
 // =============================
 // 📤 Enviar mensagem no WhatsApp
 // =============================
-async function enviarMensagem(telefone, mensagem) {
+async function enviarMensagem(telefone, mensagem, isGrupo) {
   try {
-    // Remove tudo que não é número
-    let phone = String(telefone).replace(/\D/g, "");
-    // Remove @s.whatsapp.net se vier no formato de grupo/contato
-    phone = phone.split("@")[0];
-    await axios.post(`${ZAPI_URL}/send-text`, {
-      phone: phone,
-      message: mensagem,
-    }, {
-      headers: {
-        "Client-Token": ZAPI_CLIENT_TOKEN,
-      }
+    let phone = String(telefone).replace(/\D/g, "").split("@")[0];
+    
+    const endpoint = isGrupo ? "send-text-group" : "send-text";
+    const body = isGrupo
+      ? { groupId: String(telefone).split("@")[0], message: mensagem }
+      : { phone: phone, message: mensagem };
+
+    await axios.post(`${ZAPI_URL}/${endpoint}`, body, {
+      headers: { "Client-Token": ZAPI_CLIENT_TOKEN }
     });
   } catch (err) {
     console.error("Erro ao enviar mensagem:", err.message);
-    if (err.response) {
-      console.error("Detalhes:", JSON.stringify(err.response.data));
-    }
+    if (err.response) console.error("Detalhes:", JSON.stringify(err.response.data));
   }
 }
 
@@ -154,7 +150,7 @@ app.post("/webhook", async (req, res) => {
   const cmd = texto.trim().toLowerCase();
 
   if (cmd === "!lista") {
-    await enviarMensagem(telefone, gerarResumo());
+    await enviarMensagem(telefone, gerarResumo(), isGrupo);
     return;
   }
 
@@ -164,7 +160,8 @@ app.post("/webhook", async (req, res) => {
       `🤖 *Comandos disponíveis:*\n\n` +
       `• Manda qualquer item naturalmente:\n  _"preciso de papel A4, 2 caixas"_\n\n` +
       `• *!lista* — ver todos os itens pendentes\n` +
-      `• *!ajuda* — ver esta mensagem`
+      `• *!ajuda* — ver esta mensagem`,
+      isGrupo
     );
     return;
   }
@@ -197,7 +194,8 @@ app.post("/webhook", async (req, res) => {
     `📦 Qtd: ${resultado.quantidade}\n` +
     `🏷️ Categoria: ${resultado.categoria}\n` +
     `👤 Solicitado por: ${autor}\n\n` +
-    `_Digite !lista para ver todos os itens_`
+    `_Digite !lista para ver todos os itens_`,
+    isGrupo
   );
 });
 
