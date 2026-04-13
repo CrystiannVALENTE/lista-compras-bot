@@ -84,14 +84,14 @@ Se não for um pedido de compra, retorne: {"ehPedido": false}`,
 // =============================
 async function enviarMensagem(telefone, mensagem, isGrupo) {
   try {
-    let phone = String(telefone).replace(/\D/g, "").split("@")[0];
-    
-    const endpoint = isGrupo ? "send-text-group" : "send-text";
-    const body = isGrupo
-      ? { groupId: String(telefone).split("@")[0], message: mensagem }
-      : { phone: phone, message: mensagem };
+    let phone = String(telefone).replace(/-group$/, "").replace(/@.*$/, "");
 
-    await axios.post(`${ZAPI_URL}/${endpoint}`, body, {
+    console.log(`📤 Enviando para: ${phone}, grupo: ${isGrupo}`);
+
+    await axios.post(`${ZAPI_URL}/send-text`, {
+      phone: phone,
+      message: mensagem,
+    }, {
       headers: { "Client-Token": ZAPI_CLIENT_TOKEN }
     });
   } catch (err) {
