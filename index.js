@@ -202,8 +202,32 @@ app.post("/webhook", async (req, res) => {
   );
 });
 
-// Health check
-app.get("/", (req, res) => res.json({ status: "Bot rodando! 🤖" }));
+// =============================
+// ⏰ RELATÓRIO DIÁRIO ÀS 8H
+// =============================
+const GRUPO_ID = "120363423230103539-group";
+
+function agendarRelatorio() {
+  const agora = new Date();
+  const proximo = new Date();
+  proximo.setHours(8, 0, 0, 0);
+  if (proximo <= agora) proximo.setDate(proximo.getDate() + 1);
+  const diff = proximo - agora;
+
+  setTimeout(async () => {
+    const lista = lerLista().filter(i => !i.comprado);
+    if (lista.length > 0) {
+      const resumo = `☀️ *BOM DIA! Lista de compras do dia:*\n\n` + gerarResumo();
+      await enviarMensagem(GRUPO_ID, resumo, true);
+      console.log("📅 Relatório diário enviado!");
+    }
+    agendarRelatorio(); // reagenda para o próximo dia
+  }, diff);
+
+  console.log(`⏰ Próximo relatório em ${Math.round(diff/1000/60)} minutos`);
+}
+
+agendarRelatorio();
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Bot rodando na porta ${PORT}`));
